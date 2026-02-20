@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Gallery</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>A Small Collection of Moments</h1>
+
+    <div class="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="nature">Nature</button>
+        <button class="filter-btn" data-filter="architecture">Architecture</button>
+        <button class="filter-btn" data-filter="people">People</button>
+        <button class="filter-btn" data-filter="travel">Travel</button>
+        <button class="filter-btn" data-filter="minimal">Minimal</button>
+    </div>
+
+    <div class="gallery" id="gallery"></div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <span class="close" id="closeBtn">&times;</span>
+    <span class="nav prev" id="prevBtn">&#10094;</span>
+    <span class="nav next" id="nextBtn">&#10095;</span>
+
+    <div class="lightbox-content">
+        <img id="lightboxImg">
+        <p id="lightboxTitle"></p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
