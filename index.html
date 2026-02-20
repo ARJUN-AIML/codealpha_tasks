@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>&#x0B87;&#x0B9A;&#x0BC8; &middot; Isai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <canvas id="particleCanvas"></canvas>
+
+  <div class="bg-layer">
+    <div class="blob blob1" id="blob1"></div>
+    <div class="blob blob2" id="blob2"></div>
+    <div class="blob blob3" id="blob3"></div>
+    <div class="noise-overlay"></div>
+  </div>
+
+  <div class="app" id="app">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <div class="brand-mark">
+            <svg viewBox="0 0 36 36" fill="none">
+              <circle cx="18" cy="18" r="17" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/>
+              <circle cx="18" cy="18" r="6" fill="currentColor" opacity="0.8"/>
+              <path d="M18 4 Q28 12 28 18 Q28 28 18 32" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-tamil">&#x0B87;&#x0B9A;&#x0BC8;</span>
+            <span class="brand-en">ISAI</span>
+          </div>
+        </div>
+        <div class="queue-label">UP NEXT</div>
+      </div>
+
+      <ul class="playlist" id="playlist"></ul>
+
+      <div class="sidebar-controls">
+        <div class="sc-row">
+          <button class="sc-btn" id="shuffleToggle" onclick="toggleShuffle()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
+              <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
+            </svg>
+            <span>Shuffle</span>
+          </button>
+          <button class="sc-btn" id="repeatToggle" onclick="toggleRepeat()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+              <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+            </svg>
+            <span>Repeat</span>
+          </button>
+        </div>
+        <div class="sc-row autoplay-row">
+          <span class="sc-label">Autoplay</span>
+          <div class="pill-toggle active" id="autoplayToggle" onclick="toggleAutoplay()">
+            <div class="pill-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER PLAYER -->
+    <main class="player">
+
+      <div class="art-container" id="artContainer">
+        <div class="art-halo"></div>
+        <div class="art-ring art-ring1"></div>
+        <div class="art-ring art-ring2"></div>
+        <div class="art-disc" id="artDisc">
+          <div class="groove g1"></div>
+          <div class="groove g2"></div>
+          <div class="groove g3"></div>
+          <div class="groove g4"></div>
+          <div class="disc-label" id="discLabel">
+            <div class="label-inner">
+              <div class="label-num" id="labelNum">01</div>
+              <div class="label-title" id="labelTitle">NV</div>
+            </div>
+            <div class="disc-hole"></div>
+          </div>
+        </div>
+        <div class="art-shadow"></div>
+        <div class="tonearm" id="tonearm">
+          <div class="arm-pivot"></div>
+          <div class="arm-body"></div>
+          <div class="arm-head"></div>
+        </div>
+      </div>
+
+      <div class="song-info">
+        <div class="song-number" id="songNumber">01 / 05</div>
+        <h1 class="song-title" id="songTitle">Naan Varaindhu Vaitha</h1>
+        <div class="song-artists" id="songArtists">Madhushree &middot; Hariharan &middot; Vidyasagar</div>
+        <div class="song-meta-row">
+          <span class="meta-chip" id="songMovie">Jeyam Kondan</span>
+          <span class="meta-dot"></span>
+          <span class="meta-year" id="songYear">2008</span>
+        </div>
+      </div>
+
+      <div class="waveform-wrap">
+        <canvas id="waveCanvas"></canvas>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="prog-bar-hit" id="progressHit">
+          <div class="prog-track">
+            <div class="prog-glow"></div>
+            <div class="prog-fill" id="progFill">
+              <div class="prog-knob"></div>
+            </div>
+          </div>
+        </div>
+        <div class="time-row">
+          <span id="timeCurrent">0:00</span>
+          <span id="timeTotal">4:16</span>
+        </div>
+      </div>
+
+      <div class="main-controls">
+        <button class="mc-btn" onclick="prevTrack()">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="19 20 9 12 19 4 19 20"/>
+            <rect x="4" y="4" width="3" height="16" rx="1.5"/>
+          </svg>
+        </button>
+        <button class="play-pause-btn" id="playBtn" onclick="togglePlay()">
+          <div class="ppb-bg"></div>
+          <div class="ppb-ring"></div>
+          <svg class="ppb-icon" id="playIcon" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="6 3 20 12 6 21 6 3"/>
+          </svg>
+        </button>
+        <button class="mc-btn" onclick="nextTrack()">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 4 15 12 5 20 5 4"/>
+            <rect x="17" y="4" width="3" height="16" rx="1.5"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="volume-wrap">
+        <button class="vol-icon-btn" id="muteBtn" onclick="toggleMute()">
+          <svg id="volSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          </svg>
+        </button>
+        <div class="vol-track-wrap">
+          <div class="vol-track">
+            <div class="vol-fill" id="volFill" style="width:80%"></div>
+          </div>
+          <input type="range" id="volSlider" class="vol-slider" min="0" max="100" value="80" oninput="setVolume(this.value)"/>
+        </div>
+        <span class="vol-num" id="volNum">80</span>
+      </div>
+
+    </main>
+
+    <!-- RIGHT PANEL -->
+    <div class="info-panel">
+      <div class="panel-header">
+        <button class="panel-tab active" onclick="switchTab('info', this)">Details</button>
+        <button class="panel-tab" onclick="switchTab('story', this)">Story</button>
+      </div>
+
+      <div class="panel-body" id="panelInfo">
+        <div class="detail-block">
+          <div class="detail-label">ALBUM</div>
+          <div class="detail-val" id="detailAlbum">Jeyam Kondan OST</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">RELEASED</div>
+          <div class="detail-val" id="detailYear">2008</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">DURATION</div>
+          <div class="detail-val" id="detailDur">4:16</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">ARTISTS</div>
+          <div class="detail-val artists-val" id="detailArtists">Madhushree<br>Yuga Bharathi<br>Vidyasagar<br>Hariharan</div>
+        </div>
+        <div class="now-eq" id="nowEq">
+          <div class="eq-bar stopped"></div>
+          <div class="eq-bar stopped"></div>
+          <div class="eq-bar stopped"></div>
+          <div class="eq-bar stopped"></div>
+          <div class="eq-bar stopped"></div>
+        </div>
+      </div>
+
+      <div class="panel-body hidden" id="panelStory">
+        <div class="story-text" id="storyText"></div>
+      </div>
+
+      <div class="mini-spectrum" id="miniSpectrum"></div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
