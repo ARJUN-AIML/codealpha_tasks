@@ -1,0 +1,244 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:            #0d0d11;
+  --surface:       #17171e;
+  --surface-up:    #1f1f28;
+  --border:        rgba(255,255,255,0.06);
+  --text:          #eeeef5;
+  --text-dim:      #888899;   /* passes 4.5:1 on --surface-up */
+  --text-muted:    #555566;
+  --accent:        #c8ff57;
+  --accent-text:   #0d0d11;
+  --accent-glow:   rgba(200,255,87,0.22);
+  --accent-dim:    rgba(200,255,87,0.13);
+  --accent-border: rgba(200,255,87,0.30);
+  --op-bg:         #24242e;
+  --op-hover:      #2c2c38;
+  --num-hover:     rgba(255,255,255,0.04);
+  --gap:           9px;
+  --btn-h:         68px;
+  --r-card:        26px;
+  --r-btn:         14px;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  font-family: 'Outfit', sans-serif;
+  background-image:
+    radial-gradient(ellipse 55% 35% at 15% 85%, rgba(200,255,87,0.03) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 45% at 85% 15%, rgba(100,70,220,0.04) 0%, transparent 65%);
+}
+
+/* ── CARD ───────────────────────────────── */
+.calculator {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  padding: 20px;
+  width: 330px;
+  box-shadow:
+    0 50px 100px rgba(0,0,0,0.65),
+    0 8px 30px rgba(0,0,0,0.4),
+    0 0 0 1px var(--border);
+  animation: rise .45s cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes rise {
+  from { opacity:0; transform:translateY(20px) scale(.97); }
+  to   { opacity:1; transform:translateY(0)    scale(1);   }
+}
+
+/* ── DISPLAY ────────────────────────────── */
+.display-container {
+  background: var(--surface-up);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 18px 14px;
+  margin-bottom: 18px;
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  overflow: hidden;
+  position: relative;
+}
+
+.display-container::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(200,255,87,0.025) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* Expression / context line */
+.expression-line {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-dim);
+  min-height: 20px;
+  margin-bottom: 8px;
+  width: 100%;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  letter-spacing: .02em;
+  transition: color .2s;
+}
+
+/* Current number */
+.current-operand {
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -.025em;
+  width: 100%;
+  text-align: right;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  /* fade left edge — start at 5% not 12% to avoid clipping leading digit */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%);
+          mask-image: linear-gradient(to right, transparent 0%, black 5%);
+  transition: font-size .1s ease, color .15s;
+
+  font-size: 46px;
+}
+.current-operand.sz-md  { font-size: 36px; }
+.current-operand.sz-sm  { font-size: 28px; }
+.current-operand.sz-xs  { font-size: 21px; }
+.current-operand.sz-2xs { font-size: 17px; }
+.current-operand.error  { color: #ff6b6b; font-size: 24px; }
+
+/* ── GRID ───────────────────────────────── */
+.buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+}
+
+/* ── BASE BUTTON ────────────────────────── */
+.btn {
+  height: var(--btn-h);
+  border: none;
+  border-radius: var(--r-btn);
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .08s ease, background .12s ease, box-shadow .12s ease;
+}
+
+/* Accessible focus ring (keyboard nav) */
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn:active { transform: scale(.91); }
+
+/* ghost spacer cells */
+.btn-ghost {
+  background: transparent;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── VARIANTS ───────────────────────────── */
+
+.btn-num {
+  background: transparent;
+  color: var(--text);
+  font-size: 22px;
+}
+.btn-num:hover { background: var(--num-hover); }
+
+/* Decimal — filled circle, larger visual target */
+.btn-dot { font-size: 14px; color: var(--text); }
+
+/* Operators */
+.btn-op {
+  background: var(--op-bg);
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 300;
+}
+.btn-op:hover { background: var(--op-hover); }
+
+/* Active operator — lime accent, consistent with = */
+.btn-op.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1.5px var(--accent-border);
+}
+
+/* DEL — dominant secondary; ⌫ icon at readable size */
+.btn-del {
+  background: var(--op-bg);
+  color: var(--text);
+  font-size: 22px;
+}
+.btn-del:hover { background: var(--op-hover); }
+
+/* C — de-emphasized; contrast-safe grey (≥4.5:1) */
+.btn-clear {
+  background: var(--surface-up);
+  color: var(--text-dim);   /* #888899 passes contrast on #1f1f28 */
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: .04em;
+}
+.btn-clear:hover { background: rgba(255,80,80,.1); color: #ff8888; }
+.btn-clear.is-ac { color: #ff7070; }
+.btn-clear.is-ac:hover { color: #ff4444; background: rgba(255,60,60,.12); }
+
+/* +/− and % */
+.btn-fn {
+  background: var(--surface-up);
+  color: var(--text-dim);
+  font-size: 17px;
+}
+.btn-fn:hover { background: var(--op-hover); color: var(--text); }
+
+/* Equals — bottom-right, spans 2 cols */
+.btn-equals {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 26px;
+  font-weight: 600;
+  box-shadow: 0 4px 22px var(--accent-glow);
+}
+.btn-equals:hover {
+  background: #d4ff6a;
+  box-shadow: 0 6px 32px rgba(200,255,87,.4);
+}
+
+.span2 { grid-column: span 2; }
+
+/* Pop on result */
+@keyframes pop {
+  0%  { transform: scale(1); }
+  40% { transform: scale(1.04); }
+  100%{ transform: scale(1); }
+}
+.popping { animation: pop .18s ease; }
+
+/* Ripple */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: rpl .38s linear forwards;
+  background: rgba(255,255,255,.09);
+  pointer-events: none;
+}
+@keyframes rpl { to { transform: scale(4.5); opacity: 0; } }
